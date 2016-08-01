@@ -221,6 +221,7 @@ for k in range(0,num_lines):
 
 print "Who is your pick to win it all?"
 pick = raw_input("> ")
+print "%r" % pick
 
 
 cols, rows = 2, num_lines/2  
@@ -264,9 +265,10 @@ else:
 
 print "The %d %s are the champions!" % (champ[0], champ[1])
 
+print pick
 
-
-
+if pick in champ:
+    print "You picked the correct champion!"
 
 
 
