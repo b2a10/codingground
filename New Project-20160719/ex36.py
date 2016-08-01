@@ -55,7 +55,7 @@ Currently hardcoded for only 4 or 8teams
 """
 def setup_bracket(teamlist, num_lines):
     if num_lines == 4:
-        print "four teams"
+        #print "four teams"
         cols, rows = 2, 2
         matches = [[0 for x in range(cols)] for y in range(rows)]
         
@@ -66,7 +66,7 @@ def setup_bracket(teamlist, num_lines):
             end = end-1
         return matches
     else:
-        print "eight teams"
+        #print "eight teams"
         cols, rows = 2, 4
         matches = [[0 for x in range(cols)] for y in range(rows)]
         
@@ -92,10 +92,45 @@ def match_game(matchups, match_num):
     
     # Function returns true if Team 1 has lower seed, false if Team 2 does
     hi_seed = higher_seed(team1[0], team2[0])
-    
-    # THE KEY TO GETTING RID OF THE UGLINESS OF THE STRINGS!!!!!
-    t1str = team1[1].replace("\n","")
-    t2str = team2[1].replace("\n","")    
+
+    # Lower seed gets advantage
+    if hi_seed is True:
+        # Team 1 has lower seed
+        t1num = random.randint(1,50) * 1.25
+        t2num = random.randint(1,50)
+        
+        if t1num > t2num:
+            print "The %d %s defeat the %d %s, %d to %d" % (
+                    team1[0], team1[1] ,team2[0], team2[1], t1num,t2num)
+            return team1
+        else:
+            print "Upset! The %d %s defeat the %d %s, %d to %d" % (
+                    team2[0],team2[1], team1[0], team1[1], t2num, t1num)
+            return team2
+    else:
+        # Team 2 has lower seed
+        t1num = random.randint(1,50)
+        t2num = random.randint(1,50) * 1.25
+        
+        if t1num > t2num:
+            print "The %d %s defeat the %d %s, %d to %d" % (
+                    team1[0], team1[1] ,team2[0], team2[1], t1num,t2num)
+            return team1
+        else:
+            print "Upset! The %d %s defeat the %d %s, %d to %d" % (
+                    team2[0],team2[1], team1[0], team1[1], t2num, t1num)
+            return team2
+        
+
+"""
+Championship function, used similar to match_game but only when two teams left.
+"""
+def championship(finalists):
+    team1 = finalists[0]
+    team2 = finalists[1]    
+
+    # Function returns true if Team 1 has lower seed, false if Team 2 does
+    hi_seed = higher_seed(team1[0], team2[0])
     
     # Lower seed gets advantage
     if hi_seed is True:
@@ -104,11 +139,12 @@ def match_game(matchups, match_num):
         t2num = random.randint(1,50)
         
         if t1num > t2num:
-            print "The %s defeat the %s, %d to %d" % (t1str, t2str, t1num,t2num)
+            print "The %d %s defeat the %d %s, %d to %d" % (
+                    team1[0], team1[1] ,team2[0], team2[1], t1num,t2num)
             return team1
         else:
-            print "Upset! The %s defeat the %s, %d to %d" % (t2str, 
-                        t1str, t2num, t1num)
+            print "Upset! The %d %s defeat the %d %s, %d to %d" % (
+                    team2[0],team2[1], team1[0], team1[1], t2num, t1num)
             return team2
     else:
         # Team 2 has lower seed
@@ -116,14 +152,18 @@ def match_game(matchups, match_num):
         t2num = random.randint(1,50) * 1.25
         
         if t1num > t2num:
-            print "The %s defeat the %s, %d to %d" % (t1str, t2str, t1num,t2num)
+            print "The %d %s defeat the %d %s, %d to %d" % (
+                    team1[0], team1[1] ,team2[0], team2[1], t1num,t2num)
             return team1
         else:
-            print "Upset! The %s defeat the %s, %d to %d" % (t2str, 
-                        t1str, t2num, t1num)
+            print "Upset! The %d %s defeat the %d %s, %d to %d" % (
+                    team2[0],team2[1], team1[0], team1[1], t2num, t1num)
             return team2
-        
-    
+
+
+
+
+
 
 """
 Function to determine which team has lower seed in a match. 
@@ -136,9 +176,12 @@ def higher_seed(seed1, seed2):
         return False
 
 
-# begin rest of program #
+# ------begin rest of program------- #
 
 script, teamdb = argv
+
+print "Welcome to Ben's Bracket Game! Press Enter to continue."
+raw_input("> ")
 
 teams = open(teamdb)
 
@@ -154,21 +197,12 @@ with open(teamdb) as file:
     for line in file:
         teampool.append(line)
 
-# print each team being used 
-for i in range(0,num_lines):
-    print teampool[i],
-
 
 # creating new list for randomly shuffled teams
 shuffled = []
 
-print "---Seeded---"
-
 # shuffles the team pool into a new list - see pydoc for '9.6 random'
 shuffled = random.sample(teampool, num_lines)
-
-for j in range(0,num_lines):
-    print shuffled[j],
 
 final_seeds = []
 final_seeds = seed_assign(shuffled, num_lines)
@@ -176,37 +210,62 @@ final_seeds = seed_assign(shuffled, num_lines)
 # Sort teams by their seeds
 final_seeds.sort()
 
-for k in range(0,num_lines):
-    print final_seeds[k]
+print "Your teams have been seeded:\n_____________\n"
 
-# need to account for more than 4 teams here 
-cols, rows = 2, 2  
+for k in range(0,num_lines):
+    tstr = final_seeds[k][1]
+    teamname = tstr.replace("\n","")
+    final_seeds[k][1] = teamname
+    print "%d %s" % (final_seeds[k][0], final_seeds[k][1])
+
+
+print "Who is your pick to win it all?"
+pick = raw_input("> ")
+
+
+cols, rows = 2, num_lines/2  
 bracket = [[0 for x in range(cols)] for y in range(rows)] 
 
 # Call function to set up matches - aka bracket
 bracket = setup_bracket(final_seeds, num_lines)
 
-for l in range(0,2):
-    print bracket[l]
+#for dx in range(0,2):
+#    print bracket[dx]
 
+print "The matches are about to begin."
+
+i = 0
+round_num = 1
+games = num_lines/2
+next_round = []
 
 # Play the matches - second arg is which match number to be played
-w1 = match_game(bracket, 0)
-w2 = match_game(bracket, 1)
+while i < games:
+    winner = match_game(bracket, i)
+    next_round.append(winner)
+    raw_input("> ")
+    i = i+1
+   
+print "Finished round %d" % round_num
+raw_input("> ")
 
-win1 = w1[1].replace("\n","")
-win2 = w2[1].replace("\n","")   
+if len(next_round) == 2:
+    print "The championship game will be between the %d %s and the %d %s" % (
+        next_round[0][0],next_round[0][1],next_round[1][0],next_round[1][1])
+    raw_input("> ")
+    champ = championship(next_round)
+else:
+    print "These teams made it through to the next round: "
 
-print "The championship game is: %d %s versus %d %s" % (w1[0], win1, w2[0],win2)
+    for idex in range(0,games):
+        print "%d %s" % (next_round[idex][0], next_round[idex][1])
 
-nround = []
-nround.append(w1)
-nround.append(w2)
+    raw_input("> ")
 
-c = match_game(nround, "C")
+print "The %d %s are the champions!" % (champ[0], champ[1])
 
-champ = c[1].replace("\n","")
-print "The %d %s are the champions!" % (c[0], champ)
+
+
 
 
 
