@@ -24,7 +24,9 @@ Bracket Game
 
 # function definitions # 
 
-# function to assign seeds randomly to teams 
+"""
+Function to assign seeds randomly to teams
+"""
 def seed_assign(shuff_teams, num_lines):
 
     cols, rows = 2, num_lines
@@ -41,31 +43,81 @@ def seed_assign(shuff_teams, num_lines):
                 contains = True
 
     for index in range(0,num_lines):
-        seeded[index][0] = shuff_teams[index]       
-        seeded[index][1] = seeds[index]
+        seeded[index][0] = seeds[index]
+        seeded[index][1] = shuff_teams[index]       
 
     return seeded
 
-def sort_seeds(shuffled, num_lines):
-    sorted_seeds = []
-    
-    while sorted_seeds.__len__() != 4:
-        print "hey"
 
-
-def setup_bracket(pool, num_lines):
+"""
+Set up "match arrays" based on seeds. 
+Currently hardcoded for only 4 or 8teams
+"""
+def setup_bracket(teamlist, num_lines):
     if num_lines == 4:
         print "four teams"
-        match1 = []
-        match2 = []
+        cols, rows = 2, 2
+        matches = [[0 for x in range(cols)] for y in range(rows)]
         
+        end = num_lines-1
+        for i in range(num_lines/2):
+            matches[i][0] = teamlist[i]
+            matches[i][1] = teamlist[end]
+            end = end-1
+        return matches
     else:
         print "eight teams"
+        cols, rows = 2, 4
+        matches = [[0 for x in range(cols)] for y in range(rows)]
+        
+        # need to test this
+        end = num_lines-1
+        for i in range(num_lines/2):
+            matches[i][0] = teamlist[i]
+            matches[i][1] = teamlist[end]
+            end = end-1
+        return matches
 
+"""
+Function to run a sim through a 'match.'
+In the future, add all matches to an array and return for user access
+"""
+def match_game(matchups):
+    team1 = matchups[0][0]
+    team2 = matchups[0][1]
+    
+    # Function returns true if Team 1 has higher seed, false if Team 2 does
+    hi_seed = higher_seed(team1[0], team2[0])
+    
+    # Higher seed gets advantage
+    if hi_seed is True:
+        t1num = random.randint(1,50) * 1.25
+        t2num = random.randint(1,50)
+        
+        # THE KEY TO GETTING RID OF THE UGLINESS OF THE STRINGS!!!!!
+        t1str = team1[1].replace("\n","")
+        t2str = team2[1].replace("\n","")
+        
+        if t1num > t2num:
+            print "The %s defeat the %s, %d to %d" % (t1str, t2str, t1num,t2num)
+        else:
+            print "Upset! The %s defeat the %s, %d to %d" % (t2str, t1str, t2num                         , t1num)
+    else:
+        print "Yo"
+        t1num = random.randint(1,50)
+        t2num = random.randint(1,50) * 1.25
     
     
 
-
+"""
+Function to determine which team has higher seed in a match. 
+Will return True if Team 1 (seed1) has a higher seed, False if Team 2 is higher.
+"""
+def higher_seed(seed1, seed2):
+    if seed1 < seed2:
+        return True
+    else:
+        return False
 
 
 # begin rest of program #
@@ -105,12 +157,29 @@ for j in range(0,num_lines):
 final_seeds = []
 final_seeds = seed_assign(shuffled, num_lines)
 
+# Sort teams by their seeds
+final_seeds.sort()
+
 for k in range(0,num_lines):
     print final_seeds[k]
 
-#setup_bracket(num_lines)
+# need to account for more than 4 teams here 
+cols, rows = 2, 2  
+bracket = [[0 for x in range(cols)] for y in range(rows)] 
 
-sort_seeds(shuffled, num_lines)
+# Call function to set up matches - aka bracket
+bracket = setup_bracket(final_seeds, num_lines)
+
+for l in range(0,2):
+    print bracket[l]
+
+# Play the matches
+match_game(bracket)
+
+
+
+
+
 
 
 
