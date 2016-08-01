@@ -221,6 +221,3 @@ print "The %d %s are the champions!" % (c[0], champ)
 
 
 
-
-
-
