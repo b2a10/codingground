@@ -82,36 +82,52 @@ def setup_bracket(teamlist, num_lines):
 Function to run a sim through a 'match.'
 In the future, add all matches to an array and return for user access
 """
-def match_game(matchups):
-    team1 = matchups[0][0]
-    team2 = matchups[0][1]
+def match_game(matchups, match_num):
+    if match_num == "C":
+        team1 = matchups[0]
+        team2 = matchups[1]
+    else:
+        team1 = matchups[match_num][0]
+        team2 = matchups[match_num][1]
     
-    # Function returns true if Team 1 has higher seed, false if Team 2 does
+    # Function returns true if Team 1 has lower seed, false if Team 2 does
     hi_seed = higher_seed(team1[0], team2[0])
     
-    # Higher seed gets advantage
+    # THE KEY TO GETTING RID OF THE UGLINESS OF THE STRINGS!!!!!
+    t1str = team1[1].replace("\n","")
+    t2str = team2[1].replace("\n","")    
+    
+    # Lower seed gets advantage
     if hi_seed is True:
+        # Team 1 has lower seed
         t1num = random.randint(1,50) * 1.25
         t2num = random.randint(1,50)
         
-        # THE KEY TO GETTING RID OF THE UGLINESS OF THE STRINGS!!!!!
-        t1str = team1[1].replace("\n","")
-        t2str = team2[1].replace("\n","")
+        if t1num > t2num:
+            print "The %s defeat the %s, %d to %d" % (t1str, t2str, t1num,t2num)
+            return team1
+        else:
+            print "Upset! The %s defeat the %s, %d to %d" % (t2str, 
+                        t1str, t2num, t1num)
+            return team2
+    else:
+        # Team 2 has lower seed
+        t1num = random.randint(1,50)
+        t2num = random.randint(1,50) * 1.25
         
         if t1num > t2num:
             print "The %s defeat the %s, %d to %d" % (t1str, t2str, t1num,t2num)
+            return team1
         else:
-            print "Upset! The %s defeat the %s, %d to %d" % (t2str, t1str, t2num                         , t1num)
-    else:
-        print "Yo"
-        t1num = random.randint(1,50)
-        t2num = random.randint(1,50) * 1.25
-    
+            print "Upset! The %s defeat the %s, %d to %d" % (t2str, 
+                        t1str, t2num, t1num)
+            return team2
+        
     
 
 """
-Function to determine which team has higher seed in a match. 
-Will return True if Team 1 (seed1) has a higher seed, False if Team 2 is higher.
+Function to determine which team has lower seed in a match. 
+Will return True if Team 1 (seed1) has a lower seed, False if Team 2 is lower.
 """
 def higher_seed(seed1, seed2):
     if seed1 < seed2:
@@ -173,8 +189,27 @@ bracket = setup_bracket(final_seeds, num_lines)
 for l in range(0,2):
     print bracket[l]
 
-# Play the matches
-match_game(bracket)
+
+# Play the matches - second arg is which match number to be played
+w1 = match_game(bracket, 0)
+w2 = match_game(bracket, 1)
+
+win1 = w1[1].replace("\n","")
+win2 = w2[1].replace("\n","")   
+
+print "The championship game is: %d %s versus %d %s" % (w1[0], win1, w2[0],win2)
+
+nround = []
+nround.append(w1)
+nround.append(w2)
+
+c = match_game(nround, "C")
+
+champ = c[1].replace("\n","")
+print "The %d %s are the champions!" % (c[0], champ)
+
+
+
 
 
 
