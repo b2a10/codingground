@@ -23,15 +23,27 @@ Bracket Game
 #_______________________________#
 
 # function definitions # 
+
+# function to assign seeds randomly to teams 
 def seed_assign(shuff_teams):
 
     cols, rows = 2, 4
     seeded = [[0 for x in range(cols)] for y in range(rows)]
+    seeds = []
+    
+    for r in range(0,4):
+        contains = False
+        while contains is False:
+            rand_seed = random.randint(1,4)
+            
+            if not seeds.__contains__(rand_seed):
+                seeds.append(rand_seed)
+                print "Appended seed %d" % rand_seed
+                contains = True
 
-    index = 0
     for index in range(0,4):
         seeded[index][0] = shuff_teams[index]       
-        seeded[index][1] = random.randint(1,4)
+        seeded[index][1] = seeds[index]
 
     return seeded
 
