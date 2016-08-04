@@ -6,12 +6,57 @@ from random import randint
 
 class Engine(object):
     
-    def __init__(self, hood, morale):
+    def __init__(self, hood):
        self.hood = hood
-       self.morale = morale
     
     def play(self):
-        pass
+        cash = self.hood.cash
+        current_date = self.hood.current_month
+        morale = Morale()
+        curr_morale = 0
+        success = 5
+        
+        print "Welcome to the Neighborhood. You have just taken over as the new "
+        print "Community Manager of a struggling locale in your city. Your job is "
+        print "to increase morale while keeping our spending in the green. You "
+        print "will be provided with optional fundraisers and initiatives that "
+        print "you may choose from as you feel necessary. Good luck."
+        
+        while curr_morale != 2:
+            print "[Year: %d | Month: %d || Cash: $%d || Morale: %d]" % (self.hood.years, self.hood.current_month,
+                                                                        cash, curr_morale)
+            print "What would you like to do?\n1. Fundraise\n2. Start a community initiative\n3. Build something"
+            action = int(raw_input("> "))
+            
+            if action == 1:
+                print "Chose Fundraise"
+                fr = Fundraiser()
+                fr.create()
+                if fr.response == 0:
+                    curr_morale = morale.decrease()
+                    print "Morale decreased to %d" % curr_morale
+                else:
+                    curr_morale = morale.increase()
+                    print "Morale increased to %d" % curr_morale
+                    cash = self.hood.incr_cash(fr)
+            elif action == 2:
+                print "Chose to Start an Initiative"
+                ini = Initiative()
+                ini.create()
+                if ini.response == 0:
+                    curr_morale = morale.decrease()
+                    print "Morale decreased to %d" % curr_morale
+                else:
+                    curr_morale = morale.increase()
+                    print "Morale increased to %d" % curr_morale
+                    cash = self.hood.incr_cash(ini)
+            else:
+                print "BUILD: Not yet configured"
+            
+            if self.hood.current_month == 12:
+                self.hood.current_month = 0
+                self.hood.increase_year()
+           
 
 class Morale(object):
     
@@ -37,6 +82,7 @@ class Project(object):
 class Fundraiser(Project):
     
     fund = 0
+    response = 0
     
     def create(self):
         print "Fundraiser Creator\n-------------\nChoose a fundraiser:"
@@ -45,16 +91,15 @@ class Fundraiser(Project):
         
         print "Enter the number of your choice"
         self.fund = int(raw_input("> "))
-        response = 0
         
         if self.fund == 4 or self.fund == 7 or self.fund == 8:
-            print "Nobody likes this idea. No money raised and no morale boosted."
-            response = 0
-            return response
+            print "Nobody likes this idea. No money raised and morale decreased."
+            self.response = 0
+            return self.response
         else: 
             print "Great idea! Morale boosted and money raised."
-            reponse = 1
-            return response
+            self.response = 1
+            return self.response
 
 
 
@@ -94,9 +139,9 @@ class Build(Project):
         print "Enter the number of your choice"
         self.building = int(raw_input("> "))
         self.cost = ex45info.costs.get(ex45info.builds.get(self.building))
-        response = 0
+        response = 1
         
-        # check money
+        # check for sufficient funds
 
 class Neighborhood(object):
     
@@ -105,8 +150,8 @@ class Neighborhood(object):
     years = 0
     cash = 0
     
-    def __init__(self, start_month):
-        self.start_month = start_month
+    def __init__(self):
+        self.start_month = self.current_month
 
     def next_month(self):
         self.current_month +=1
@@ -118,55 +163,78 @@ class Neighborhood(object):
         return self.years
         
     def incr_cash(self, event):
+        
         if isinstance(event, Fundraiser):
+            
             if event.fund == 1 or event.fund == 6:
                 print "made 20"
                 self.cash +=20
+                return self.cash
+                
             elif event.fund == 3:
                 print "made 40"
                 self.cash +=40
+                return self.cash
+                
             elif event.fund == 2 or event.fund == 5:
                 print "made 100"
                 self.cash +=100
+                return self.cash
+                
             else:
                 print "no money made"
+                self.cash +=0
+                return self.cash
     
     def decr_cash(self, event):
+        
         if isinstance(event, Initiative):
+            
             if event.initiat == 1 or event.initiat == 5 or event.initiat == 4:
                 print "lost 20"
                 self.cash -=20
+                return self.cash
+                
             elif event.initiat == 3 or event.initiat == 8:
                 print "lost 40"
                 self.cash -=40
+                return self.cash
+                
             elif event.initiat == 2 or event.initiat == 6 or event.initiat == 7:
                 print "lost 100"
                 self.cash -=100
+                return self.cash
+                
         elif isinstance(event, Build):
             cost = event.cost
             print "lost %d" % cost
             self.cash -=cost
+            return self.cash
+            
+        else:
+            print "Not yet configured."
+            self.cash -= 0
+            return self.cash
     
-a_hood = Neighborhood(1)
-morally = Morale()
+a_hood = Neighborhood()
 
-fr = Fundraiser()
+a_game = Engine(a_hood)
+a_game.play()
+
+
+#morally = Morale()
+#fr = Fundraiser()
 #fr.create()
 
-ini = Initiative()
+#ini = Initiative()
 #ini.create()
 
-bld = Build()
-bld.create()
+#bld = Build()
+#bld.create()
 
 #a_hood.incr_cash(fr)
 #a_hood.decr_cash(ini)
 #a_hood.decr_cash(bld)
 #print a_hood.cash
-
-a_game = Engine(a_hood, morally)
-a_game.play()
-
-
 
 
