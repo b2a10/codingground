@@ -117,12 +117,12 @@ class Initiative(Project):
         response = 0
         
         if self.initiat == 1 or self.initiat == 6 or self.initiat == 8:
-            print "Nobody likes this idea. No money raised and no morale boosted."
+            print "Nobody likes this idea. No money raised and morale lost."
             response = 0
             return response
         else: 
             print "Great idea! Morale boosted and money raised."
-            reponse = 1
+            response = 1
             return response
 
 class Build(Project):
