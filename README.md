@@ -16,7 +16,7 @@ Keeping this as a sort of progress report, and until I can get it saved onto hom
 
 8/04/16: Exercise 45 is a game of some sort, but will still be labeled ex45.py
 
-8/05/16: <strike>Going to edit ex45.py a bit so there may be errors as I can't compile it in codingground.</strike> Just kidding, found a new site called "PythonAnywhere." Will be trying that out for today.
+8/05/16: <strike>Going to edit ex45.py a bit so there may be errors as I can't compile it in codingground.</strike> Just kidding, found a new site called "PythonAnywhere." Will be trying that out for today. Had to skip Exercise 46 as I wouldn't be able to install the necessary packages without being on a home computer. Will have to come back to 'Skeleton Directories.'
 
 ---
 
